@@ -1,0 +1,105 @@
+<!-- analytics-panel.component.html -->
+<div class="geo-dashboard">
+  <!-- Geospatial Data Quality Card -->
+  <mat-card class="metric-card">
+    <mat-card-header>
+      <mat-card-title>Geospatial Data Quality</mat-card-title>
+      <mat-card-subtitle>Overall score based on geometry validity and completeness</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="gauge-container">
+        <div class="gauge-chart" [style.--value]="report.data_quality?.score || 0">
+          <div class="gauge-fill"></div>
+          <span class="gauge-label">{{ report.data_quality?.score || 0 }}%</span>
+        </div>
+        <div class="quality-metrics">
+          <div class="metric-item" matTooltip="Coordinate Reference System consistency">
+            <mat-icon [class.valid]="report.data_quality?.crs_consistency" [class.invalid]="!report.data_quality?.crs_consistency">
+              {{ report.data_quality?.crs_consistency ? 'check_circle' : 'warning' }}
+            </mat-icon>
+            <span>CRS</span>
+          </div>
+          <div class="metric-item" matTooltip="Geometry validity ratio">
+            <span class="valid-count">{{ report.data_quality?.valid_geometries || 0 }}</span>
+            <span class="separator">/</span>
+            <span class="total-count">{{ report.data_quality?.total_geometries || 0 }}</span>
+            <mat-icon>hexagon</mat-icon>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Spatial Anomalies Visualization -->
+  <mat-card class="anomaly-card">
+    <mat-card-header>
+      <mat-card-title>Spatial Anomaly Heatmap</mat-card-title>
+      <mat-card-subtitle>Geographic distribution of detected anomalies</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div echarts [options]="anomalyChartOption" class="chart-container"></div>
+      <div class="legend">
+        <div class="legend-item" *ngFor="let item of heatmapLegend">
+          <span class="legend-color" [style.background]="item.color"></span>
+          <span class="legend-label">{{item.label}}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Geospatial Analysis Report -->
+  <mat-card class="report-card">
+    <mat-card-header>
+      <mat-card-title>Geospatial Analysis Report</mat-card-title>
+      <mat-card-subtitle>Detailed findings from shapefile analysis</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="report-section">
+        <h3 class="section-title">Key Metrics</h3>
+        <mat-list dense>
+          <mat-list-item>
+            <mat-icon listIcon>warning</mat-icon>
+            <span class="metric-label">Spatial Anomalies:</span>
+            <span class="metric-value">{{report.anomalies?.length || 0}}</span>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-icon listIcon>score</mat-icon>
+            <span class="metric-label">Mean Anomaly Score:</span>
+            <span class="metric-value">{{report.meanScore | number:'1.2-2' || 'N/A'}}</span>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-icon listIcon>model_training</mat-icon>
+            <span class="metric-label">Model Used:</span>
+            <span class="metric-value">{{report.modelType || 'Geospatial Foundation Model'}}</span>
+          </mat-list-item>
+        </mat-list>
+      </div>
+
+      <div class="report-section" *ngIf="report.data_quality?.geometry_types">
+        <h3 class="section-title">Geometry Types</h3>
+        <div class="geometry-types">
+          <div class="type-item" *ngFor="let type of objectKeys(report.data_quality.geometry_types)">
+            <span class="type-name">{{type}}</span>
+            <mat-progress-bar mode="determinate" 
+                             [value]="(report.data_quality.geometry_types[type] / report.data_quality.total_geometries) * 100">
+            </mat-progress-bar>
+            <span class="type-count">{{report.data_quality.geometry_types[type]}}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-section" *ngIf="report.topology_issues?.length > 0">
+        <h3 class="section-title">Topology Issues</h3>
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let issue of report.topology_issues | slice:0:5" [expanded]="false">
+            <mat-expansion-panel-header>
+              <mat-icon class="issue-icon">error_outline</mat-icon>
+              <span class="issue-summary">{{issue | truncate:60}}</span>
+            </mat-expansion-panel-header>
+            <div class="issue-details">{{issue}}</div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

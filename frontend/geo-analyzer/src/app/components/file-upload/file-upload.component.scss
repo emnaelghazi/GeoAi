@@ -1,0 +1,34 @@
+.upload-card {
+  mat-card-header {
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  .upload-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 10px;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-name {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 10px;
+    }
+  }
+
+  .file-types {
+    color: #666;
+  }
+}

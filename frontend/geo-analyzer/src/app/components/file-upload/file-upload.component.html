@@ -1,0 +1,30 @@
+<mat-card class="upload-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>cloud_upload</mat-icon>
+      Upload Geospatial Data
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="upload-actions">
+      <input type="file" #fileInput accept=".shp,.geojson,.json" 
+             (change)="onFileSelected($event)" style="display: none">
+      <button mat-raised-button color="primary" (click)="fileInput.click()">
+        <mat-icon>attach_file</mat-icon>
+        SELECT FILE
+      </button>
+      <span class="file-name" *ngIf="selectedFile">
+        {{ selectedFile.name }}
+      </span>
+      <button mat-raised-button color="accent" 
+              (click)="uploadFile()" 
+              [disabled]="!selectedFile">
+        <mat-icon>analytics</mat-icon>
+        ANALYZE
+      </button>
+    </div>
+    <div class="file-types">
+      <small>Supported formats: .shp, .geojson, .json</small>
+    </div>
+  </mat-card-content>
+</mat-card>
